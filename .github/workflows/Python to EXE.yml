@@ -47,4 +47,4 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: dist/Beat Down.exe
           asset_name: Beat Down.exe
-          asset_content_type: application/octet-stream
+          asset_content_type: application/vnd.github+json
