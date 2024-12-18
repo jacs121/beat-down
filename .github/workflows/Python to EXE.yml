@@ -22,7 +22,7 @@ jobs:
         id: tag_name
         run: |
           # Clean up the commit message for a valid tag
-          TAG_NAME="v$(echo $COMMIT_MSG | tr ' ' '-' | tr -cd '[:alnum:]-')"
+          TAG_NAME="v$(echo $COMMIT_MSG)"
           echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
         env:
           COMMIT_MSG: ${{ env.COMMIT_MSG }}
