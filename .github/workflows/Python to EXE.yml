@@ -2,20 +2,38 @@ name: Python to EXE
 
 on:
   push:
-    tags:
-      - "v*"
     branches:
       - main  # Trigger on pushes to the main branch
   workflow_dispatch:  # Allow manual triggering of the workflow
 
 jobs:
   build:
-    permissions: write-all
     runs-on: windows-latest
-    if: ${{github.event.base_ref}} == "v*"
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
+      - name: Extract Commit Message
+        id: commit_message
+        run: |
+          echo "COMMIT_MSG=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
+      - name: Generate Tag Name
+        id: tag_name
+        run: |
+          # Clean up the commit message for a valid tag
+          TAG_NAME="v$(echo $COMMIT_MSG | tr ' ' '-' | tr -cd '[:alnum:]-')"
+          echo "TAG_NAME=${TAG_NAME}" >> $GITHUB_ENV
+        env:
+          COMMIT_MSG: ${{ env.COMMIT_MSG }}
+
+      - name: Create Git Tag
+        run: |
+          git tag ${{ env.TAG_NAME }}
+          git push origin ${{ env.TAG_NAME }}
+        env:
+          TAG_NAME: ${{ env.TAG_NAME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -35,15 +53,14 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ github.ref_name }}  # Replace with your desired release version
-          release_name: "Beat Down ${{ github.ref_name }}"
+          tag_name: ${{ env.TAG_NAME }}
+          release_name: "Beat Down ${{ env.TAG_NAME }}"
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use 'RELEASE_TOKEN' if using a PAT
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload EXE to Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/Beat Down.exe
-          tag_name: ${{ github.ref_name }}
+          files: "dist/Beat Down.exe"
