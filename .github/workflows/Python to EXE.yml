@@ -35,8 +35,8 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ github.action_ref }}  # Replace with your desired release version
-          release_name: "Beat Down ${{ github.action_ref }}"
+          tag_name: ${{ github.ref_name }}  # Replace with your desired release version
+          release_name: "Beat Down ${{ github.ref_name }}"
           draft: false
           prerelease: false
         env:
@@ -46,4 +46,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/Beat Down.exe
-          tag_name: ${{ github.action_ref }}
+          tag_name: ${{ github.ref_name }}
