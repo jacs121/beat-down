@@ -2,7 +2,8 @@ name: Python to EXE
 
 on:
   push:
-    tags: v*
+    tags:
+      - "v*"
     branches:
       - main  # Trigger on pushes to the main branch
   workflow_dispatch:  # Allow manual triggering of the workflow
@@ -45,3 +46,4 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: dist/Beat Down.exe
+          tag_name: v1.0.0
