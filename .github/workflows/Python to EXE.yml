@@ -17,7 +17,7 @@ jobs:
       - name: Extract Commit Message
         id: commit_message
         run: |
-          echo "$(git log -1 --pretty=%B)" >> $COMMIT_MSG
+          echo "$(git log -1 --pretty=%B)" >> $env.COMMIT_MSG
 
       - name: Create Git Tag
         run: |
