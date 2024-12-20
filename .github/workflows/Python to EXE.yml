@@ -10,8 +10,10 @@ jobs:
   build:
     # test if the commit message starts with a v
     # then test if the rest of the commits is a integer
-    if: startsWith(github.event.head_commit.message, 'v') && contains(github.event.head_commit.message, '^[1-9][0-9]*$')
+    if: ${{ github.event.head_commit.message }} == "^v[1-9][0-9]*\.[0-9]+\.[0-9]+$"
+    
     runs-on: windows-latest
+
 
     steps:
       - name: Checkout code
