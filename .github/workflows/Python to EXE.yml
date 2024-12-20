@@ -37,8 +37,8 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: ${{ github.event.commits.message }}
-          release_name: "Beat Down ${{ github.event.commits.message }}"
+          tag_name: ${{ github.event.head_commit.message }}
+          release_name: "Beat Down ${{ github.event.head_commit.message }}"
           draft: false
           prerelease: false
         env:
@@ -55,4 +55,3 @@ jobs:
       - name: test log
         run: |
           echo ${{ github.event.head_commit.message }}
-          echo ${{  startsWith(github.event.head_commit.message, 'v') && contains(github.event.head_commit.message, '^[1-9][0-9]*$') }}
