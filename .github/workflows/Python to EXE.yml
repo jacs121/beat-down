@@ -10,8 +10,7 @@ jobs:
   build:
     # test if the commit message starts with a v
     # then test if the rest of the commits is a integer
-    if: github.event.head_commit.message ==
-      'v*.*.*'
+    if: startsWith(github.event.head_commit.message, 'v') && contains(github.event.head_commit.message, '^[1-9][0-9]*$')
     runs-on: windows-latest
 
     steps:
@@ -54,4 +53,3 @@ jobs:
       - name: test log
         run: |
           echo ${{ github.event.head_commit.message }}
-          echo ${{ github.event.head_commit.message == 'v*.*.*' }}
