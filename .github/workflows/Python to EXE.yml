@@ -53,3 +53,4 @@ jobs:
       - name: test log
         run: |
           echo ${{ github.event.head_commit.message }}
+          echo ${{  startsWith(github.event.head_commit.message, 'v') && contains(github.event.head_commit.message, '^[1-9][0-9]*$') }}
