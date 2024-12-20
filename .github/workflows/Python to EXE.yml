@@ -10,10 +10,7 @@ jobs:
   build:
     # test if the commit message starts with a v
     # then test if the rest of the commits is a integer
-    if: |
-      startsWith(github.event.head_commit.message, 'v') &&
-      contains(github.event.head_commit.message, '.') &&
-      github.event.head_commit.message == 'v*.*.*'
+    if: github.event.head_commit.message == 'v*.*.*'
     runs-on: windows-latest
 
     steps:
@@ -49,3 +46,10 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: "dist/Beat Down.exe"
+  test:
+    runs-on: windows-latest
+
+    steps:
+      - name: test log
+        run: |
+          echo ${{ github.event.head_commit.message }}
