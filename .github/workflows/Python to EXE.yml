@@ -10,7 +10,7 @@ jobs:
   build:
     # test if the commit message starts with a v
     # then test if the rest of the commits is a integer
-    if: (startsWith(github.event.head_commit.message, 'v') || startsWith(github.event.head_commit.message, 'V')) && github.event.head_commit.message == '^v\\d+\\.\\d+\\.\\d+$'
+    if: github.event.head_commit.message == '^v\\d+\\.\\d+\\.\\d+$'
     runs-on: windows-latest
 
     steps:
