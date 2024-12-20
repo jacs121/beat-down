@@ -1,4 +1,4 @@
-name: Python to EXE
+name: test Python to EXE
 
 on:
   push:
@@ -11,9 +11,6 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Extract Commit Message
         id: commit_message
         run: |
@@ -26,33 +23,3 @@ jobs:
         env:
           COMMIT_MSG: ${{ env.COMMIT_MSG }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: 3.11
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pyinstaller pygame librosa win11toast
-
-      - name: Build EXE with PyInstaller
-        run: |
-          pyinstaller ./main.py --noconfirm --onefile --windowed --name "Beat Down"
-
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
-        with:
-          tag_name: ${{ env.COMMIT_MSG }}
-          release_name: "Beat Down ${{ env.COMMIT_MSG }}"
-          draft: false
-          prerelease: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload EXE to Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: "dist/Beat Down.exe"
