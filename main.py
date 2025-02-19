@@ -9,22 +9,24 @@ import random
 
 songI = 0
 
-
 def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5):
     global songI
-    audio_path = sorted(glob.glob("songs/*.MP3"))[songI]  # Replace with your audio file path
+    audio_path = sorted(glob.glob("songs/*.MP3"))[songI]
     pygame.display.set_caption("Beat Rhythm - waiting")
-
+    
+    
+    print("Audio file loading...")
     y, sr = librosa.load(audio_path, sr=None)
     onset_frames = librosa.onset.onset_detect(y=y, sr=sr, delta=delta, pre_max=pre_max, post_max=post_max, backtrack=True)
     onset_times = librosa.frames_to_time(onset_frames, sr=sr)  # Onset times in seconds
 
     # Calculate song duration and set end trigger
+    print("Calculating song duration...")
     song_duration = librosa.get_duration(y=y, sr=sr)
     end_trigger_time = song_duration - 10  # 10 seconds before song ends
 
     songI += 1
-    if songI > len(glob.glob("songs/*.MP3")):  # Change the number of songs if needed
+    if songI > len(glob.glob("songs/*.MP3")):  # Change the number of song when needed
         songI = 0
     pygame.display.set_caption(f"Beat Rhythm - {os.path.basename(audio_path)}")
     return end_trigger_time, onset_times, audio_path, song_duration
@@ -56,8 +58,9 @@ DARK_BLUE = (0, 0, 127)
 # Initialize pygame
 pygame.init()
 screen = pygame.display.set_mode((800, 600))
-
+print("processing song...")
 end_trigger_time, onset_times, audio_path, song_duration = cycleSong()
+print("song processed")
 # Target zone settings
 target_y = 550
 target_radius = 30
