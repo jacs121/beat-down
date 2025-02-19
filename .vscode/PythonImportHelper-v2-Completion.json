@@ -76,7 +76,25 @@
         "kind": 2,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5):\n    global songI\n    audio_path = sorted(glob.glob(\"songs/*.MP3\"))[songI]\n    pygame.display.set_caption(\"Beat Rhythm - waiting\")\n    print(\"Audio file loading...\")\n    y, sr = librosa.load(audio_path, sr=None)\n    onset_frames = librosa.onset.onset_detect(y=y, sr=sr, delta=delta, pre_max=pre_max, post_max=post_max, backtrack=True)\n    onset_times = librosa.frames_to_time(onset_frames, sr=sr)  # Onset times in seconds\n    # Calculate song duration and set end trigger\n    print(\"Calculating song duration...\")",
+        "peekOfCode": "def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):\n    global songI\n    song_files = sorted(glob.glob(\"songs/*.MP3\"))\n    if not song_files:\n        win11toast.toast(\"Beat Rhythm - no songs available\", \"Please add songs to the songs folder.\")\n        exit()\n    audio_path = song_files[songI]\n    pygame.display.set_caption(\"Beat down - waiting\")\n    print(\"Audio file loading...\")\n    y, sr = librosa.load(audio_path, sr=None)",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "change_difficulty",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def change_difficulty(level=\"normal\"):\n    global tolerance, beat_speed, targets_active, max_combo_multiplier, difficulty\n    difficulty = level\n    settings = DIFFICULTY_SETTINGS[level]\n    tolerance = settings[\"tolerance\"]\n    beat_speed = settings[\"beat_speed\"]\n    targets_active = settings[\"targets\"]\n    max_combo_multiplier = settings[\"max_combo\"]\nDIFFICULTIES = [\"easy\", \"normal\", \"hard\", \"extreme\"]\ndef cycle_difficulty(direction=1):",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "cycle_difficulty",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def cycle_difficulty(direction=1):\n    global difficulty\n    idx = DIFFICULTIES.index(difficulty) + direction\n    difficulty = DIFFICULTIES[max(0, min(idx, len(DIFFICULTIES) - 1))]\n    change_difficulty(difficulty)\ncombo_multiplier = 1\ncombo_multiplier_show_cooldown = 0\n# Game settings\nclock = pygame.time.Clock()\nfps = 60",
         "detail": "main",
         "documentation": {}
     },
@@ -85,7 +103,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "songI = 0\ndef cycleSong(delta=0.22, pre_max=10.5, post_max=10.5):\n    global songI\n    audio_path = sorted(glob.glob(\"songs/*.MP3\"))[songI]\n    pygame.display.set_caption(\"Beat Rhythm - waiting\")\n    print(\"Audio file loading...\")\n    y, sr = librosa.load(audio_path, sr=None)\n    onset_frames = librosa.onset.onset_detect(y=y, sr=sr, delta=delta, pre_max=pre_max, post_max=post_max, backtrack=True)\n    onset_times = librosa.frames_to_time(onset_frames, sr=sr)  # Onset times in seconds\n    # Calculate song duration and set end trigger",
+        "peekOfCode": "songI = 0\ndef cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):\n    global songI\n    song_files = sorted(glob.glob(\"songs/*.MP3\"))\n    if not song_files:\n        win11toast.toast(\"Beat Rhythm - no songs available\", \"Please add songs to the songs folder.\")\n        exit()\n    audio_path = song_files[songI]\n    pygame.display.set_caption(\"Beat down - waiting\")\n    print(\"Audio file loading...\")",
         "detail": "main",
         "documentation": {}
     },
@@ -157,7 +175,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "YELLOW = (255, 255, 0)\nBLUE = (0, 0, 255)\nDARK_RED = (127, 0, 0)\nDARK_GREEN = (0, 127, 0)\nDARK_YELLOW = (127, 127, 0)\nDARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\nprint(\"processing song...\")",
+        "peekOfCode": "YELLOW = (255, 255, 0)\nBLUE = (0, 0, 255)\nDARK_RED = (127, 0, 0)\nDARK_GREEN = (0, 127, 0)\nDARK_YELLOW = (127, 127, 0)\nDARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\n# Target zone settings",
         "detail": "main",
         "documentation": {}
     },
@@ -166,7 +184,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "BLUE = (0, 0, 255)\nDARK_RED = (127, 0, 0)\nDARK_GREEN = (0, 127, 0)\nDARK_YELLOW = (127, 127, 0)\nDARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\nprint(\"processing song...\")\nend_trigger_time, onset_times, audio_path, song_duration = cycleSong()",
+        "peekOfCode": "BLUE = (0, 0, 255)\nDARK_RED = (127, 0, 0)\nDARK_GREEN = (0, 127, 0)\nDARK_YELLOW = (127, 127, 0)\nDARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\n# Target zone settings\ntarget_y = 550",
         "detail": "main",
         "documentation": {}
     },
@@ -175,7 +193,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "DARK_RED = (127, 0, 0)\nDARK_GREEN = (0, 127, 0)\nDARK_YELLOW = (127, 127, 0)\nDARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\nprint(\"processing song...\")\nend_trigger_time, onset_times, audio_path, song_duration = cycleSong()\nprint(\"song processed\")",
+        "peekOfCode": "DARK_RED = (127, 0, 0)\nDARK_GREEN = (0, 127, 0)\nDARK_YELLOW = (127, 127, 0)\nDARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\n# Target zone settings\ntarget_y = 550\ntarget_radius = 30",
         "detail": "main",
         "documentation": {}
     },
@@ -184,7 +202,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "DARK_GREEN = (0, 127, 0)\nDARK_YELLOW = (127, 127, 0)\nDARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\nprint(\"processing song...\")\nend_trigger_time, onset_times, audio_path, song_duration = cycleSong()\nprint(\"song processed\")\n# Target zone settings",
+        "peekOfCode": "DARK_GREEN = (0, 127, 0)\nDARK_YELLOW = (127, 127, 0)\nDARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\n# Target zone settings\ntarget_y = 550\ntarget_radius = 30\ntarget0_color = GREEN",
         "detail": "main",
         "documentation": {}
     },
@@ -193,7 +211,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "DARK_YELLOW = (127, 127, 0)\nDARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\nprint(\"processing song...\")\nend_trigger_time, onset_times, audio_path, song_duration = cycleSong()\nprint(\"song processed\")\n# Target zone settings\ntarget_y = 550",
+        "peekOfCode": "DARK_YELLOW = (127, 127, 0)\nDARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\n# Target zone settings\ntarget_y = 550\ntarget_radius = 30\ntarget0_color = GREEN\ntarget1_color = YELLOW",
         "detail": "main",
         "documentation": {}
     },
@@ -202,7 +220,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "DARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\nprint(\"processing song...\")\nend_trigger_time, onset_times, audio_path, song_duration = cycleSong()\nprint(\"song processed\")\n# Target zone settings\ntarget_y = 550\ntarget_radius = 30",
+        "peekOfCode": "DARK_BLUE = (0, 0, 127)\n# Initialize pygame\npygame.init()\nscreen = pygame.display.set_mode((800, 600))\n# Target zone settings\ntarget_y = 550\ntarget_radius = 30\ntarget0_color = GREEN\ntarget1_color = YELLOW\ntarget2_color = BLUE",
         "detail": "main",
         "documentation": {}
     },
@@ -211,7 +229,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "screen = pygame.display.set_mode((800, 600))\nprint(\"processing song...\")\nend_trigger_time, onset_times, audio_path, song_duration = cycleSong()\nprint(\"song processed\")\n# Target zone settings\ntarget_y = 550\ntarget_radius = 30\ntarget0_color = GREEN\ntarget1_color = YELLOW\ntarget2_color = BLUE",
+        "peekOfCode": "screen = pygame.display.set_mode((800, 600))\n# Target zone settings\ntarget_y = 550\ntarget_radius = 30\ntarget0_color = GREEN\ntarget1_color = YELLOW\ntarget2_color = BLUE\nscore = 0\nmaxScore = 0\nscore_font = pygame.font.Font(None, 36)",
         "detail": "main",
         "documentation": {}
     },
@@ -238,7 +256,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "target0_color = GREEN\ntarget1_color = YELLOW\ntarget2_color = BLUE\nscore = 0\nmaxScore = 0\nscore_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\nscore_color = WHITE",
+        "peekOfCode": "target0_color = GREEN\ntarget1_color = YELLOW\ntarget2_color = BLUE\nscore = 0\nmaxScore = 0\nscore_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\ninfo_font = pygame.font.Font(None, 20)",
         "detail": "main",
         "documentation": {}
     },
@@ -247,7 +265,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "target1_color = YELLOW\ntarget2_color = BLUE\nscore = 0\nmaxScore = 0\nscore_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\nscore_color = WHITE\nscore_color_cooldown = 0",
+        "peekOfCode": "target1_color = YELLOW\ntarget2_color = BLUE\nscore = 0\nmaxScore = 0\nscore_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\ninfo_font = pygame.font.Font(None, 20)\nscore_color = WHITE",
         "detail": "main",
         "documentation": {}
     },
@@ -256,7 +274,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "target2_color = BLUE\nscore = 0\nmaxScore = 0\nscore_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\nscore_color = WHITE\nscore_color_cooldown = 0\nend_screen = False  # Variable to track if end screen should be displayed",
+        "peekOfCode": "target2_color = BLUE\nscore = 0\nmaxScore = 0\nscore_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\ninfo_font = pygame.font.Font(None, 20)\nscore_color = WHITE\nscore_color_cooldown = 0",
         "detail": "main",
         "documentation": {}
     },
@@ -265,7 +283,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "score = 0\nmaxScore = 0\nscore_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\nscore_color = WHITE\nscore_color_cooldown = 0\nend_screen = False  # Variable to track if end screen should be displayed\ntargets_active = []",
+        "peekOfCode": "score = 0\nmaxScore = 0\nscore_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\ninfo_font = pygame.font.Font(None, 20)\nscore_color = WHITE\nscore_color_cooldown = 0\nmenu_screen = True  # Variable to track if end screen should be displayed",
         "detail": "main",
         "documentation": {}
     },
@@ -274,7 +292,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "maxScore = 0\nscore_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\nscore_color = WHITE\nscore_color_cooldown = 0\nend_screen = False  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"",
+        "peekOfCode": "maxScore = 0\nscore_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\ninfo_font = pygame.font.Font(None, 20)\nscore_color = WHITE\nscore_color_cooldown = 0\nmenu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []",
         "detail": "main",
         "documentation": {}
     },
@@ -283,7 +301,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "score_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\nscore_color = WHITE\nscore_color_cooldown = 0\nend_screen = False  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\nif difficulty == \"easy\":",
+        "peekOfCode": "score_font = pygame.font.Font(None, 36)\nend_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\ninfo_font = pygame.font.Font(None, 20)\nscore_color = WHITE\nscore_color_cooldown = 0\nmenu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"",
         "detail": "main",
         "documentation": {}
     },
@@ -292,7 +310,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "end_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\nscore_color = WHITE\nscore_color_cooldown = 0\nend_screen = False  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\nif difficulty == \"easy\":\n    tolerance = 50",
+        "peekOfCode": "end_font = pygame.font.Font(None, 48)  # Font for end screen text\ncombo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\ninfo_font = pygame.font.Font(None, 20)\nscore_color = WHITE\nscore_color_cooldown = 0\nmenu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\ntolerance = 40",
         "detail": "main",
         "documentation": {}
     },
@@ -301,7 +319,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "combo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\nscore_color = WHITE\nscore_color_cooldown = 0\nend_screen = False  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\nif difficulty == \"easy\":\n    tolerance = 50\n    beat_speed = 80",
+        "peekOfCode": "combo_multiplier_font = pygame.font.Font(None, 45)\ntargets_font = pygame.font.Font(None, 25)\ninfo_font = pygame.font.Font(None, 20)\nscore_color = WHITE\nscore_color_cooldown = 0\nmenu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)",
         "detail": "main",
         "documentation": {}
     },
@@ -310,7 +328,16 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "targets_font = pygame.font.Font(None, 25)\nscore_color = WHITE\nscore_color_cooldown = 0\nend_screen = False  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\nif difficulty == \"easy\":\n    tolerance = 50\n    beat_speed = 80\n    targets_active = [0]",
+        "peekOfCode": "targets_font = pygame.font.Font(None, 25)\ninfo_font = pygame.font.Font(None, 20)\nscore_color = WHITE\nscore_color_cooldown = 0\nmenu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "info_font",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "info_font = pygame.font.Font(None, 20)\nscore_color = WHITE\nscore_color_cooldown = 0\nmenu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10",
         "detail": "main",
         "documentation": {}
     },
@@ -319,7 +346,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "score_color = WHITE\nscore_color_cooldown = 0\nend_screen = False  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\nif difficulty == \"easy\":\n    tolerance = 50\n    beat_speed = 80\n    targets_active = [0]\n    max_combo_multiplier = 15",
+        "peekOfCode": "score_color = WHITE\nscore_color_cooldown = 0\nmenu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {",
         "detail": "main",
         "documentation": {}
     },
@@ -328,16 +355,16 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "score_color_cooldown = 0\nend_screen = False  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\nif difficulty == \"easy\":\n    tolerance = 50\n    beat_speed = 80\n    targets_active = [0]\n    max_combo_multiplier = 15\nelif difficulty == \"normal\":",
+        "peekOfCode": "score_color_cooldown = 0\nmenu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},",
         "detail": "main",
         "documentation": {}
     },
     {
-        "label": "end_screen",
+        "label": "menu_screen",
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "end_screen = False  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\nif difficulty == \"easy\":\n    tolerance = 50\n    beat_speed = 80\n    targets_active = [0]\n    max_combo_multiplier = 15\nelif difficulty == \"normal\":\n    tolerance = 40",
+        "peekOfCode": "menu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},",
         "detail": "main",
         "documentation": {}
     },
@@ -346,7 +373,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "targets_active = []\ndifficulty = \"normal\"\nif difficulty == \"easy\":\n    tolerance = 50\n    beat_speed = 80\n    targets_active = [0]\n    max_combo_multiplier = 15\nelif difficulty == \"normal\":\n    tolerance = 40\n    beat_speed = 155  # Speed at which onsets move down the screen (pixels per second)",
+        "peekOfCode": "targets_active = []\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},",
         "detail": "main",
         "documentation": {}
     },
@@ -355,25 +382,16 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "difficulty = \"normal\"\nif difficulty == \"easy\":\n    tolerance = 50\n    beat_speed = 80\n    targets_active = [0]\n    max_combo_multiplier = 15\nelif difficulty == \"normal\":\n    tolerance = 40\n    beat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\n    targets_active = [-1, 1]",
+        "peekOfCode": "difficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},",
         "detail": "main",
         "documentation": {}
     },
     {
-        "label": "combo_multiplier",
+        "label": "tolerance",
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "combo_multiplier = 1\ncombo_multiplier_show_cooldown = 0\nbeat_speed = max(beat_speed, 10) if 'beat_speed' in locals() else 10  # Ensure valid beat_speed\nonsets = [{'time': onset_time,\n           'start_y': (((beat_speed - 10) / onset_time) + 20) if onset_time != 0 else float('inf'),\n           'y_position': 0,\n           'active': True,\n           'scored': False,\n           'target_index': random.choice(targets_active) if targets_active else None}\n          for onset_time in onset_times]",
-        "detail": "main",
-        "documentation": {}
-    },
-    {
-        "label": "combo_multiplier_show_cooldown",
-        "kind": 5,
-        "importPath": "main",
-        "description": "main",
-        "peekOfCode": "combo_multiplier_show_cooldown = 0\nbeat_speed = max(beat_speed, 10) if 'beat_speed' in locals() else 10  # Ensure valid beat_speed\nonsets = [{'time': onset_time,\n           'start_y': (((beat_speed - 10) / onset_time) + 20) if onset_time != 0 else float('inf'),\n           'y_position': 0,\n           'active': True,\n           'scored': False,\n           'target_index': random.choice(targets_active) if targets_active else None}\n          for onset_time in onset_times]\n# Game settings",
+        "peekOfCode": "tolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}",
         "detail": "main",
         "documentation": {}
     },
@@ -382,16 +400,61 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "beat_speed = max(beat_speed, 10) if 'beat_speed' in locals() else 10  # Ensure valid beat_speed\nonsets = [{'time': onset_time,\n           'start_y': (((beat_speed - 10) / onset_time) + 20) if onset_time != 0 else float('inf'),\n           'y_position': 0,\n           'active': True,\n           'scored': False,\n           'target_index': random.choice(targets_active) if targets_active else None}\n          for onset_time in onset_times]\n# Game settings\nclock = pygame.time.Clock()",
+        "peekOfCode": "beat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):",
         "detail": "main",
         "documentation": {}
     },
     {
-        "label": "onsets",
+        "label": "targets_active",
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "onsets = [{'time': onset_time,\n           'start_y': (((beat_speed - 10) / onset_time) + 20) if onset_time != 0 else float('inf'),\n           'y_position': 0,\n           'active': True,\n           'scored': False,\n           'target_index': random.choice(targets_active) if targets_active else None}\n          for onset_time in onset_times]\n# Game settings\nclock = pygame.time.Clock()\nfps = 60",
+        "peekOfCode": "targets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):\n    global tolerance, beat_speed, targets_active, max_combo_multiplier, difficulty",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "max_combo_multiplier",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "max_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):\n    global tolerance, beat_speed, targets_active, max_combo_multiplier, difficulty\n    difficulty = level",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "DIFFICULTY_SETTINGS",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "DIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):\n    global tolerance, beat_speed, targets_active, max_combo_multiplier, difficulty\n    difficulty = level\n    settings = DIFFICULTY_SETTINGS[level]",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "DIFFICULTIES",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "DIFFICULTIES = [\"easy\", \"normal\", \"hard\", \"extreme\"]\ndef cycle_difficulty(direction=1):\n    global difficulty\n    idx = DIFFICULTIES.index(difficulty) + direction\n    difficulty = DIFFICULTIES[max(0, min(idx, len(DIFFICULTIES) - 1))]\n    change_difficulty(difficulty)\ncombo_multiplier = 1\ncombo_multiplier_show_cooldown = 0\n# Game settings\nclock = pygame.time.Clock()",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "combo_multiplier",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "combo_multiplier = 1\ncombo_multiplier_show_cooldown = 0\n# Game settings\nclock = pygame.time.Clock()\nfps = 60\nbeat_start = time.time()  # Start time to sync the onsets\nonsets = []\n# Game loop\nstart_menu = True\nrunning = True",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "combo_multiplier_show_cooldown",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "combo_multiplier_show_cooldown = 0\n# Game settings\nclock = pygame.time.Clock()\nfps = 60\nbeat_start = time.time()  # Start time to sync the onsets\nonsets = []\n# Game loop\nstart_menu = True\nrunning = True\nwhile running:",
         "detail": "main",
         "documentation": {}
     },
@@ -400,7 +463,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "clock = pygame.time.Clock()\nfps = 60\nbeat_start = time.time()  # Start time to sync the onsets\n# Load and play the music\npygame.mixer.Sound(audio_path).play()\n# Game loop\nrunning = True\nwhile running:\n    current_time = time.time() - beat_start\n    if end_screen:",
+        "peekOfCode": "clock = pygame.time.Clock()\nfps = 60\nbeat_start = time.time()  # Start time to sync the onsets\nonsets = []\n# Game loop\nstart_menu = True\nrunning = True\nwhile running:\n    current_time = time.time() - beat_start\n    if menu_screen:",
         "detail": "main",
         "documentation": {}
     },
@@ -409,7 +472,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "fps = 60\nbeat_start = time.time()  # Start time to sync the onsets\n# Load and play the music\npygame.mixer.Sound(audio_path).play()\n# Game loop\nrunning = True\nwhile running:\n    current_time = time.time() - beat_start\n    if end_screen:\n        # Display the end screen",
+        "peekOfCode": "fps = 60\nbeat_start = time.time()  # Start time to sync the onsets\nonsets = []\n# Game loop\nstart_menu = True\nrunning = True\nwhile running:\n    current_time = time.time() - beat_start\n    if menu_screen:\n        # Display the end screen",
         "detail": "main",
         "documentation": {}
     },
@@ -418,7 +481,25 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "beat_start = time.time()  # Start time to sync the onsets\n# Load and play the music\npygame.mixer.Sound(audio_path).play()\n# Game loop\nrunning = True\nwhile running:\n    current_time = time.time() - beat_start\n    if end_screen:\n        # Display the end screen\n        screen.fill(BLACK)",
+        "peekOfCode": "beat_start = time.time()  # Start time to sync the onsets\nonsets = []\n# Game loop\nstart_menu = True\nrunning = True\nwhile running:\n    current_time = time.time() - beat_start\n    if menu_screen:\n        # Display the end screen\n        screen.fill(BLACK)",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "onsets",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "onsets = []\n# Game loop\nstart_menu = True\nrunning = True\nwhile running:\n    current_time = time.time() - beat_start\n    if menu_screen:\n        # Display the end screen\n        screen.fill(BLACK)\n        # Calculate positions to center text",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
+        "label": "start_menu",
+        "kind": 5,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "start_menu = True\nrunning = True\nwhile running:\n    current_time = time.time() - beat_start\n    if menu_screen:\n        # Display the end screen\n        screen.fill(BLACK)\n        # Calculate positions to center text\n        score_percentage = math.floor(100 * ((score / maxScore) if score > 0 else 0))\n        difficulty_text = combo_multiplier_font.render(difficulty.upper(), True, WHITE)",
         "detail": "main",
         "documentation": {}
     },
@@ -427,7 +508,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "running = True\nwhile running:\n    current_time = time.time() - beat_start\n    if end_screen:\n        # Display the end screen\n        screen.fill(BLACK)\n        target1_color = DARK_GREEN\n        target2_color = DARK_YELLOW\n        target3_color = DARK_BLUE\n        # Calculate positions to center text",
+        "peekOfCode": "running = True\nwhile running:\n    current_time = time.time() - beat_start\n    if menu_screen:\n        # Display the end screen\n        screen.fill(BLACK)\n        # Calculate positions to center text\n        score_percentage = math.floor(100 * ((score / maxScore) if score > 0 else 0))\n        difficulty_text = combo_multiplier_font.render(difficulty.upper(), True, WHITE)\n        difficulty_rect = difficulty_text.get_rect(center=(screen.get_width() / 2, 50))",
         "detail": "main",
         "documentation": {}
     }
