@@ -12,7 +12,7 @@ __pycache__/
 build/
 to exe.bat
 songs/*.mp3
-.vscode
+.vscode/
 beat down.exe.json
 beat down.exe
 develop-eggs/
