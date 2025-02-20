@@ -286,8 +286,8 @@ while running:
                     target2_color = BLUE
                     beat_speed = max(beat_speed, 10) if 'beat_speed' in locals() else 10  # Ensure valid beat_speed
                     onsets = [{'time': onset_time,
-                        'start_y': (((beat_speed - 10) / onset_time) + 20) if onset_time != 0 else float('inf'),
-                        'y_position': 0,
+                        'start_y': target_y - (beat_speed * 1.5) + 20,  # Start higher above the target
+                        'y_position': target_y - (beat_speed * 1.5) + 20,  # Ensures proper movement
                         'active': True,
                         'scored': False,
                         'target_index': random.choice(targets_active) if targets_active else None}
@@ -308,8 +308,8 @@ while running:
                     target2_color = BLUE
                     beat_speed = max(beat_speed, 10) if 'beat_speed' in locals() else 10  # Ensure valid beat_speed
                     onsets = [{'time': onset_time,
-                        'start_y': (((beat_speed - 10) / onset_time) + 20) if onset_time != 0 else float('inf'),
-                        'y_position': 0,
+                        'start_y': target_y - (beat_speed * 1.5),  # Start higher above the target
+                        'y_position': target_y - (beat_speed * 1.5),  # Ensures proper movement
                         'active': True,
                         'scored': False,
                         'target_index': random.choice(targets_active) if targets_active else None}
@@ -362,9 +362,11 @@ while running:
     if not start_menu:
         # Move onsets downward and draw them
         for onset in onsets:
-            if onset['active'] and current_time >= onset['time']:
-                onset['y_position'] = onset['start_y'] + beat_speed * (current_time - onset['time'])
+            if onset['active']:
+                time_since_onset = current_time - onset['time']
+                onset['y_position'] = onset['start_y'] + beat_speed * time_since_onset
                 pygame.draw.circle(screen, RED, (400 + target_radius*2.5*onset['target_index'], int(onset['y_position'])), 15)
+                
 
                 if onset['y_position'] >= target_y + tolerance:
                     onset['active'] = False
