@@ -319,9 +319,9 @@ while running:
                     beat_start = time.time() + 0.1  # Small offset to compensate for delay
                     current_time = 0
                     menu_screen = False  # Exit end screen mode
-            elif event.key == pygame.K_UP:
+            elif event.key == pygame.K_UP and menu_screen:
                 cycle_difficulty(1)
-            elif event.key == pygame.K_DOWN:
+            elif event.key == pygame.K_DOWN and menu_screen:
                 cycle_difficulty(-1)
     if combo_multiplier_show_cooldown > 0 and not menu_screen:
         combo_multiplier_show_cooldown -= 1
