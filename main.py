@@ -92,6 +92,8 @@ combo_multiplier_font = pygame.font.Font(None, 45)
 targets_font = pygame.font.Font(None, 25)
 info_font = pygame.font.Font(None, 20)
 
+pygame.display.set_caption("Beat down")
+
 score_color = WHITE
 score_color_cooldown = 0
 menu_screen = True  # Variable to track if end screen should be displayed
