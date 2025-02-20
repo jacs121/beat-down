@@ -155,16 +155,16 @@ while running:
         difficulty_rect = difficulty_text.get_rect(center=(screen.get_width() / 2, 50))
         
         info1_text = info_font.render(f"target hit tolerance: {tolerance}", True, WHITE)
-        info1_rect = info1_text.get_rect(left=screen.right)
-        info1_rect.bottom = 50
+        info1_rect = info1_text.get_rect(left=screen.get_rect().left)
+        info1_rect.bottom = 20
         
         info2_text = info_font.render(f"circles speed: {beat_speed}", True, WHITE)
-        info2_rect = info2_text.get_rect(left=screen.right)
-        info1_rect.bottom = 70
+        info2_rect = info2_text.get_rect(left=screen.get_rect().left)
+        info2_rect.bottom = 40
         
         info3_text = info_font.render(f"max combos: {max_combo_multiplier}", True, WHITE)
-        info3_rect = info3_text.get_rect(left=screen.right)
-        info1_rect.bottom = 90
+        info3_rect = info3_text.get_rect(left=screen.get_rect().left)
+        info3_rect.bottom = 60
         
         
         if start_menu:
