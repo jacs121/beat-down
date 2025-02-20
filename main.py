@@ -7,18 +7,25 @@ import win11toast
 import os
 import random
 
-songI = 0
-
+songI = -1
 def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):
-    global songI
+    global songI, force_next_song
     song_files = sorted(glob.glob("songs/*.MP3"))
+    
     if not song_files:
         win11toast.toast("Beat Rhythm - no songs available", "Please add songs to the songs folder.")
         exit()
-    audio_path = song_files[songI]
-    pygame.display.set_caption("Beat down - waiting")
     
-    print("Audio file loading...")
+    if force_next_song:
+        force_next_song = False  # Reset after applying
+    else:
+        songI = (songI + 1) % len(song_files)  # Normal cycling
+
+    audio_path = song_files[songI]  # Correct indexing
+
+    pygame.display.set_caption(f"Beat down - {os.path.basename(audio_path)}")
+    
+    print(f"Loading {audio_path}...")
     y, sr = librosa.load(audio_path, sr=None)
     
     # Get tempo (BPM) estimate
@@ -28,27 +35,19 @@ def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):
         # Compute RMS energy of the song
         rms = librosa.feature.rms(y=y)[0]
         avg_rms = sum(rms) / len(rms)  # Average energy level
-        delta = 0.18 + (0.07 * (1 - min(avg_rms / 0.1, 1)))  # Higher RMS → Lower delta
-        
-        # Higher tempo → Lower pre_max and post_max
-        pre_max = max(5, int(20 - (tempo / 10)))  # Adjust sensitivity based on tempo
-        post_max = max(5, int(20 - (tempo / 10)))  # Adjust sensitivity based on tempo
-    
+        delta = max(0.1, min(0.25, 0.18 + (0.07 * (1 - min(avg_rms / 0.1, 1)))))  # Clamped delta
 
-        
+        pre_max = max(5, int(20 - (tempo / 10)))  # Higher tempo = Lower pre_max
+        post_max = max(5, int(20 - (tempo / 10)))
+
     onset_frames = librosa.onset.onset_detect(y=y, sr=sr, delta=delta, pre_max=pre_max, post_max=post_max, backtrack=True)
-    onset_times = librosa.frames_to_time(onset_frames, sr=sr)  # Onset times in seconds
+    onset_times = librosa.frames_to_time(onset_frames, sr=sr)
 
-    # Calculate song duration and set end trigger
-    print("Calculating song duration...")
     song_duration = librosa.get_duration(y=y, sr=sr)
     end_trigger_time = song_duration - 10  # 10 seconds before song ends
 
-    songI += 1
-    if songI >= len(glob.glob("songs/*.MP3")):  # Change the number of song when needed
-        songI = 0
-    pygame.display.set_caption(f"Beat down - {os.path.basename(audio_path)}")
     return end_trigger_time, onset_times, audio_path, song_duration
+
 
 if not os.path.exists("songs"):
     os.mkdir("songs")
@@ -83,6 +82,7 @@ target_radius = 30
 target0_color = GREEN
 target1_color = YELLOW
 target2_color = BLUE
+next_song_color = WHITE
 score = 0
 maxScore = 0
 
@@ -99,6 +99,7 @@ score_color_cooldown = 0
 menu_screen = True  # Variable to track if end screen should be displayed
 
 targets_active = []
+songList = sorted(glob.glob("songs/*.MP3"))
 difficulty = "normal"
 tolerance = 40
 beat_speed = 155  # Speed at which onsets move down the screen (pixels per second)
@@ -137,6 +138,8 @@ clock = pygame.time.Clock()
 fps = 60
 beat_start = time.time()  # Start time to sync the onsets
 onsets = []
+audio_path = songList[0]
+force_next_song = False
 
 # Game loop
 start_menu = True
@@ -165,7 +168,11 @@ while running:
         info3_rect = info3_text.get_rect(left=screen.get_rect().left)
         info3_rect.bottom = 60
         
+        next_song_text = info_font.render(f"next up: {".".join(os.path.basename(songList[(songI+1) % len(songList)]).split(".")[:-1])}", True, next_song_color)
+        next_song_rect = next_song_text.get_rect(left=screen.get_rect().left)
+        next_song_rect.bottom = screen.get_rect().bottom
         
+
         if start_menu:
             end_text = end_font.render("beat down", True, WHITE)
         else:
@@ -184,7 +191,7 @@ while running:
             screen.blit(score_text, score_text_rect)
             screen.blit(end_comment_text, end_comment_text_rect)
         else:
-            restart_text = score_font.render("C to start", True, WHITE)
+            restart_text = score_font.render("press Enter to start", True, WHITE)
         restart_text_rect = restart_text.get_rect(center=(screen.get_width() // 2, 400))
 
         # Draw the rest of the texts with centered positions
@@ -195,6 +202,7 @@ while running:
         screen.blit(info1_text, info1_rect)
         screen.blit(info2_text, info2_rect)
         screen.blit(info3_text, info3_rect)
+        screen.blit(next_song_text, next_song_rect)
 
     else:
         screen.fill(DARK_GRAY)
@@ -209,7 +217,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT and not menu_screen:
                 scored_hit = False
                 for onset in onsets:
                     if onset['active'] and not onset['scored'] and onset['target_index'] == 1:
@@ -231,7 +239,7 @@ while running:
                     score -= 10
                     score_color_cooldown = 75
                     score_color = (255, 0, 0)
-            elif event.key == pygame.K_LEFT:
+            elif event.key == pygame.K_LEFT and not menu_screen:
                 scored_hit = False
                 for onset in onsets:
                     if onset['active'] and not onset['scored'] and onset['target_index'] == -1:
@@ -275,54 +283,66 @@ while running:
                     score -= 10
                     score_color_cooldown = 75
                     score_color = (255, 0, 0)
-            elif event.key == pygame.K_c and menu_screen:  # continue game
-                    # Reset necessary variables to restart the game
-                    score = 0
-                    maxScore = 0
-                    end_trigger_time, onset_times, audio_path, song_duration = cycleSong()
-                    target0_color = GREEN
-                    target1_color = YELLOW
-                    target2_color = BLUE
-                    beat_speed = max(beat_speed, 10) if 'beat_speed' in locals() else 10  # Ensure valid beat_speed
-                    onsets = [{'time': onset_time,
-                        'start_y': target_y - (beat_speed * 1.5) + 20,  # Start higher above the target
-                        'y_position': target_y - (beat_speed * 1.5) + 20,  # Ensures proper movement
-                        'active': True,
-                        'scored': False,
-                        'target_index': random.choice(targets_active) if targets_active else None}
-                        for onset_time in onset_times]
-                    pygame.mixer.music.stop()
-                    pygame.mixer.music.load(audio_path)
-                    pygame.mixer.music.play()
-                    beat_start = time.time() + 0.1  # Small offset to compensate for delay
-                    current_time = 0
-                    menu_screen = False  # Exit end screen mode
-                    start_menu = False
+            elif event.key == pygame.K_c and menu_screen and not start_menu:  # continue game
+                next_song_color = WHITE
+                # Reset necessary variables to restart the game
+                score = 0
+                maxScore = 0
+                end_trigger_time, onset_times, audio_path, song_duration = cycleSong()
+                target0_color = GREEN
+                target1_color = YELLOW
+                target2_color = BLUE
+                beat_speed = max(beat_speed, 10) if 'beat_speed' in locals() else 10  # Ensure valid beat_speed
+                onsets = [{'time': onset_time,
+                    'start_y': target_y - (beat_speed * 1.5) + 20,  # Start higher above the target
+                    'y_position': target_y - (beat_speed * 1.5) + 20,  # Ensures proper movement
+                    'active': True,
+                    'scored': False,
+                    'target_index': random.choice(targets_active) if targets_active else None}
+                    for onset_time in onset_times]
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load(audio_path)
+                pygame.mixer.music.play()
+                beat_start = time.time() + 0.1  # Small offset to compensate for delay
+                current_time = 0
+                menu_screen = False  # Exit end screen mode
+                start_menu = False
             elif event.key == pygame.K_r and menu_screen and not start_menu:  # restart game
-                    # Reset necessary variables to restart the game
-                    score = 0
-                    maxScore = 0
-                    target0_color = GREEN
-                    target1_color = YELLOW
-                    target2_color = BLUE
-                    beat_speed = max(beat_speed, 10) if 'beat_speed' in locals() else 10  # Ensure valid beat_speed
-                    onsets = [{'time': onset_time,
-                        'start_y': target_y - (beat_speed * 1.5),  # Start higher above the target
-                        'y_position': target_y - (beat_speed * 1.5),  # Ensures proper movement
-                        'active': True,
-                        'scored': False,
-                        'target_index': random.choice(targets_active) if targets_active else None}
-                        for onset_time in onset_times]
-                    pygame.mixer.music.stop()
-                    pygame.mixer.music.load(audio_path)
-                    pygame.mixer.music.play()
-                    beat_start = time.time() + 0.1  # Small offset to compensate for delay
-                    current_time = 0
-                    menu_screen = False  # Exit end screen mode
+                next_song_color = WHITE
+                # Reset necessary variables to restart the game
+                score = 0
+                maxScore = 0
+                target0_color = GREEN
+                target1_color = YELLOW
+                target2_color = BLUE
+                beat_speed = max(beat_speed, 10) if 'beat_speed' in locals() else 10  # Ensure valid beat_speed
+                onsets = [{'time': onset_time,
+                    'start_y': target_y - (beat_speed * 1.5),  # Start higher above the target
+                    'y_position': target_y - (beat_speed * 1.5),  # Ensures proper movement
+                    'active': True,
+                    'scored': False,
+                    'target_index': random.choice(targets_active) if targets_active else None}
+                    for onset_time in onset_times]
+                pygame.mixer.music.stop()
+                pygame.mixer.music.load(audio_path)
+                pygame.mixer.music.play()
+                beat_start = time.time() + 0.1  # Small offset to compensate for delay
+                current_time = 0
+                menu_screen = False  # Exit end screen mode
             elif event.key == pygame.K_UP and menu_screen:
                 cycle_difficulty(1)
             elif event.key == pygame.K_DOWN and menu_screen:
                 cycle_difficulty(-1)
+            elif event.key == pygame.K_LEFT and menu_screen:
+                songI = (songI - 1) % len(songList)
+                force_next_song = True
+                next_song_color = YELLOW
+
+            elif event.key == pygame.K_RIGHT and menu_screen:
+                songI = (songI + 1) % len(songList)
+                force_next_song = True
+                next_song_color = YELLOW
+
     if combo_multiplier_show_cooldown > 0 and not menu_screen:
         combo_multiplier_show_cooldown -= 1
         combo_multiplier_text = combo_multiplier_font.render(f"{combo_multiplier}x", True, LIGHT_GRAY)
