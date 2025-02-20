@@ -23,6 +23,7 @@ share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+songs/*.mp3
 MANIFEST
 
 # PyInstaller
