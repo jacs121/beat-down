@@ -9,6 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+to exe.bat
 songs/*.mp3
 beat down.exe.json
 beat down.exe
