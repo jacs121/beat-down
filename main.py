@@ -333,27 +333,27 @@ while running:
     if menu_screen and not start_menu:
         pygame.display.flip()
     # Draw the target zone
-    pygame.draw.circle(screen, target0_color if difficulty in ["normal", "hard", "extreme"] else GRAY, (400 - target_radius*2.5, target_y), target_radius)
-    pygame.draw.circle(screen, target1_color if difficulty in ["easy", "extreme"] else GRAY, (400, target_y), target_radius)
-    pygame.draw.circle(screen, target2_color if difficulty in ["normal", "hard", "extreme"] else GRAY, (400 + target_radius*2.5, target_y), target_radius)
+    pygame.draw.circle(screen, target0_color if -1 in targets_active else GRAY, (400 - target_radius*2.5, target_y), target_radius)
+    pygame.draw.circle(screen, target1_color if 0 in targets_active else GRAY, (400, target_y), target_radius)
+    pygame.draw.circle(screen, target2_color if 1 in targets_active else GRAY, (400 + target_radius*2.5, target_y), target_radius)
     if not start_menu:
         progress_ratio = current_time / (song_duration if song_duration > 0 else 1)
         progress_width = int((screen.get_width() - 20) * progress_ratio)
         pygame.draw.rect(screen, GRAY, ((screen.get_width()/2)-progress_width/2, screen.get_height() - 10, progress_width, 10))  # Progress bar at top
 
-    if difficulty in ["normal", "hard", "extreme"]:
+    if -1 in targets_active:
         # show a text for the yellow target
         yellow_target_font = targets_font.render(f"LEFT", True, BLACK)
         yellow_target_rect = yellow_target_font.get_rect(center=(400 - target_radius*2.5, target_y))
         screen.blit(yellow_target_font, yellow_target_rect)
 
-    if difficulty in ["easy", "extreme"]:
+    if 0 in targets_active:
         # show a text for the green target
         green_target_font = targets_font.render(f"SPACE", True, BLACK)
         green_target_rect = green_target_font.get_rect(center=(400, target_y))
         screen.blit(green_target_font, green_target_rect)
 
-    if difficulty in ["normal", "hard", "extreme"]:
+    if 1 in targets_active:
         # show a text for the blue target
         blue_target_font = targets_font.render(f"RIGHT", True, BLACK)
         blue_target_rect = blue_target_font.get_rect(center=(400 + target_radius*2.5, target_y))
