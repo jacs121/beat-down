@@ -10,6 +10,7 @@ __pycache__/
 .Python
 build/
 songs/*.mp3
+.vscode
 beat down.exe.json
 beat down.exe
 develop-eggs/
