@@ -10,6 +10,7 @@ __pycache__/
 .Python
 build/
 songs/*.mp3
+beat down.exe
 develop-eggs/
 dist/
 downloads/
