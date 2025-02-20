@@ -23,21 +23,18 @@ def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):
     
     # Get tempo (BPM) estimate
     tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
-    
-    # Adjust onset detection parameters based on tempo
+
     if auto:
-        if tempo < 80:  
-            delta = 0.15
-            pre_max = 15
-            post_max = 15
-        elif 80 <= tempo < 130:  
-            delta = 0.2
-            pre_max = 10
-            post_max = 10
-        else:  
-            delta = 0.25
-            pre_max = 8
-            post_max = 8
+        # Compute RMS energy of the song
+        rms = librosa.feature.rms(y=y)[0]
+        avg_rms = sum(rms) / len(rms)  # Average energy level
+        delta = 0.18 + (0.07 * (1 - min(avg_rms / 0.1, 1)))  # Higher RMS → Lower delta
+        
+        # Higher tempo → Lower pre_max and post_max
+        pre_max = max(5, int(20 - (tempo / 10)))  # Adjust sensitivity based on tempo
+        post_max = max(5, int(20 - (tempo / 10)))  # Adjust sensitivity based on tempo
+    
+
         
     onset_frames = librosa.onset.onset_detect(y=y, sr=sr, delta=delta, pre_max=pre_max, post_max=post_max, backtrack=True)
     onset_times = librosa.frames_to_time(onset_frames, sr=sr)  # Onset times in seconds
@@ -169,14 +166,14 @@ while running:
         
         if start_menu:
             end_text = end_font.render("beat down", True, WHITE)
-        else: 
+        else:
             end_text = end_font.render("Game Over!" if score_percentage < 75 else "you won", True, WHITE)
         end_text_rect = end_text.get_rect(center=(screen.get_width() // 2, 200))
         if not start_menu:
             end_comment_text = score_font.render("you can do better" if score_percentage < 50 else "really good" if score_percentage >= 50 and score_percentage < 75 else "awesome" if score_percentage >= 75 and score_percentage < 100 else "perfection", True, WHITE)
             end_comment_text_rect = end_comment_text.get_rect(center=(screen.get_width() // 2, 250))
 
-            score_text = score_font.render(f"Final Score: {score} ({min(score_percentage, 100)}%)", True, WHITE)
+            score_text = score_font.render(f"Final Score: {score} ({score_percentage}%)", True, WHITE)
             score_text_rect = score_text.get_rect(center=(screen.get_width() // 2, 300))
 
             restart_text = score_font.render("Press R to Restart or C to continue", True, WHITE)
