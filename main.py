@@ -7,7 +7,6 @@ import win11toast
 import os
 import random
 import requests
-import subprocess
 import sys
 
 # Define current release version
@@ -37,7 +36,7 @@ def check_for_update():
 
 def download_update(url, latest_version):
     """Download the latest version and close the game after completion."""
-    exe_path = os.path.join(os.getcwd(), f"beat down - {latest_version}.exe")  # Save as "latest_update.exe"
+    exe_path = os.path.join(os.getcwd(), f"beat down - {latest_version}.exe")  # Save as "beat down - {version}.exe"
     try:
         response = requests.get(url, stream=True)
         with open(exe_path, "wb") as f:
@@ -45,14 +44,11 @@ def download_update(url, latest_version):
                 f.write(chunk)
         
         win11toast.toast("Download Complete", "The latest version has been downloaded. you can now use the new file.")
-        
+
         # Close the game after downloading
         sys.exit(0)
     except Exception as e:
         print(f"Download failed: {e}")
-def install_update(exe_path):
-    subprocess.run(exe_path, shell=True)  # Run the new executable
-    sys.exit(0)  # Exit the current application
 
 # Run update check if script is in executable mode
 if getattr(sys, 'frozen', False):  # Checks if running as an exe
@@ -75,7 +71,7 @@ def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):
 
     audio_path = song_files[songI]  # Correct indexing
 
-    pygame.display.set_caption(f"Beat down - {os.path.basename(audio_path)}")
+    pygame.display.set_caption(f"Beat down - waiting...")
     
     print(f"Loading {audio_path}...")
     y, sr = librosa.load(audio_path, sr=None)
@@ -97,6 +93,7 @@ def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):
 
     song_duration = librosa.get_duration(y=y, sr=sr)
     end_trigger_time = song_duration - 10  # 10 seconds before song ends
+    pygame.display.set_caption(f"Beat down - {os.path.basename(audio_path)}")
 
     return end_trigger_time, onset_times, audio_path, song_duration
 
@@ -335,7 +332,7 @@ while running:
                     score -= 10
                     score_color_cooldown = 75
                     score_color = (255, 0, 0)
-            elif event.key == pygame.K_c and menu_screen and not start_menu:  # continue game
+            elif ((event.key == pygame.K_c and not start_menu) or (event.key == pygame.K_RETURN and start_menu)) and menu_screen:  # continue game
                 next_song_color = WHITE
                 # Reset necessary variables to restart the game
                 score = 0
@@ -430,7 +427,7 @@ while running:
         blue_target_rect = blue_target_font.get_rect(center=(400 + target_radius*2.5, target_y))
         screen.blit(blue_target_font, blue_target_rect)
 
-    if not start_menu:
+    if not menu_screen:
         # Move onsets downward and draw them
         for onset in onsets:
             if onset['active']:

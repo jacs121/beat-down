@@ -81,15 +81,6 @@
         "documentation": {}
     },
     {
-        "label": "subprocess",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "subprocess",
-        "description": "subprocess",
-        "detail": "subprocess",
-        "documentation": {}
-    },
-    {
         "label": "sys",
         "kind": 6,
         "isExtraImport": true,
@@ -112,16 +103,7 @@
         "kind": 2,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "def download_update(url, latest_version):\n    \"\"\"Download the latest version and close the game after completion.\"\"\"\n    exe_path = os.path.join(os.getcwd(), f\"beat down - {latest_version}.exe\")  # Save as \"latest_update.exe\"\n    try:\n        response = requests.get(url, stream=True)\n        with open(exe_path, \"wb\") as f:\n            for chunk in response.iter_content(1024):\n                f.write(chunk)\n        win11toast.toast(\"Download Complete\", \"The latest version has been downloaded. you can now use the new file.\")\n        # Close the game after downloading",
-        "detail": "main",
-        "documentation": {}
-    },
-    {
-        "label": "install_update",
-        "kind": 2,
-        "importPath": "main",
-        "description": "main",
-        "peekOfCode": "def install_update(exe_path):\n    subprocess.run(exe_path, shell=True)  # Run the new executable\n    sys.exit(0)  # Exit the current application\n# Run update check if script is in executable mode\nif getattr(sys, 'frozen', False):  # Checks if running as an exe\n    check_for_update()\nsongI = -1\ndef cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):\n    global songI, force_next_song\n    song_files = sorted(glob.glob(\"songs/*.MP3\"))",
+        "peekOfCode": "def download_update(url, latest_version):\n    \"\"\"Download the latest version and close the game after completion.\"\"\"\n    exe_path = os.path.join(os.getcwd(), f\"beat down - {latest_version}.exe\")  # Save as \"beat down - {version}.exe\"\n    try:\n        response = requests.get(url, stream=True)\n        with open(exe_path, \"wb\") as f:\n            for chunk in response.iter_content(1024):\n                f.write(chunk)\n        win11toast.toast(\"Download Complete\", \"The latest version has been downloaded. you can now use the new file.\")\n        # Close the game after downloading",
         "detail": "main",
         "documentation": {}
     },
