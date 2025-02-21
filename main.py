@@ -57,17 +57,14 @@ if getattr(sys, 'frozen', False):  # Checks if running as an exe
 
 songI = -1
 def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):
-    global songI, force_next_song
+    global songI
     song_files = sorted(glob.glob("songs/*.MP3"))
     
     if not song_files:
         win11toast.toast("Beat Rhythm - no songs available", "Please add songs to the songs folder.")
         sys.exit()
     
-    if force_next_song:
-        force_next_song = False  # Reset after applying
-    else:
-        songI = (songI + 1) % len(song_files)  # Normal cycling
+    songI = (songI + 1) % len(song_files)  # Normal cycling
 
     audio_path = song_files[songI]  # Correct indexing
 

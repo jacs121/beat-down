@@ -112,7 +112,7 @@
         "kind": 2,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):\n    global songI, force_next_song\n    song_files = sorted(glob.glob(\"songs/*.MP3\"))\n    if not song_files:\n        win11toast.toast(\"Beat Rhythm - no songs available\", \"Please add songs to the songs folder.\")\n        sys.exit()\n    if force_next_song:\n        force_next_song = False  # Reset after applying\n    else:\n        songI = (songI + 1) % len(song_files)  # Normal cycling",
+        "peekOfCode": "def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):\n    global songI\n    song_files = sorted(glob.glob(\"songs/*.MP3\"))\n    if not song_files:\n        win11toast.toast(\"Beat Rhythm - no songs available\", \"Please add songs to the songs folder.\")\n        sys.exit()\n    songI = (songI + 1) % len(song_files)  # Normal cycling\n    audio_path = song_files[songI]  # Correct indexing\n    pygame.display.set_caption(f\"Beat down - waiting...\")\n    print(f\"Loading {audio_path}...\")",
         "detail": "main",
         "documentation": {}
     },
@@ -166,7 +166,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "songI = -1\ndef cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):\n    global songI, force_next_song\n    song_files = sorted(glob.glob(\"songs/*.MP3\"))\n    if not song_files:\n        win11toast.toast(\"Beat Rhythm - no songs available\", \"Please add songs to the songs folder.\")\n        sys.exit()\n    if force_next_song:\n        force_next_song = False  # Reset after applying\n    else:",
+        "peekOfCode": "songI = -1\ndef cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):\n    global songI\n    song_files = sorted(glob.glob(\"songs/*.MP3\"))\n    if not song_files:\n        win11toast.toast(\"Beat Rhythm - no songs available\", \"Please add songs to the songs folder.\")\n        sys.exit()\n    songI = (songI + 1) % len(song_files)  # Normal cycling\n    audio_path = song_files[songI]  # Correct indexing\n    pygame.display.set_caption(f\"Beat down - waiting...\")",
         "detail": "main",
         "documentation": {}
     },
