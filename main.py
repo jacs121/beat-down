@@ -10,7 +10,7 @@ import requests
 import sys
 
 # Define current release version
-release_version = "v1.0.0"
+release_version = "v1.0.1"
 
 # GitHub repository details
 GITHUB_REPO = "jacs121/beat-down"
