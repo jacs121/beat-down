@@ -6,6 +6,58 @@ import glob
 import win11toast
 import os
 import random
+import requests
+import subprocess
+import sys
+
+# Define current release version
+release_version = "v1.0.0"
+
+# GitHub repository details
+GITHUB_REPO = "jacs121/beat-down"
+LATEST_RELEASE_API = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
+
+def check_for_update():
+    try:
+        response = requests.get(LATEST_RELEASE_API, timeout=5)
+        response.raise_for_status()
+        latest_release = response.json()
+        
+        latest_version = latest_release["tag_name"]
+        download_url = latest_release["assets"][0]["browser_download_url"]
+
+        if latest_version != release_version:
+            win11toast.toast(
+                "Update Available",
+                f"A new version ({latest_version}) is available. Click to download.",
+                on_click=lambda: download_update(download_url, latest_version)
+            )
+    except Exception as e:
+        print(f"Failed to check for updates: {e}")
+
+def download_update(url, latest_version):
+    """Download the latest version and close the game after completion."""
+    exe_path = os.path.join(os.getcwd(), f"beat down - {latest_version}.exe")  # Save as "latest_update.exe"
+    try:
+        response = requests.get(url, stream=True)
+        with open(exe_path, "wb") as f:
+            for chunk in response.iter_content(1024):
+                f.write(chunk)
+        
+        win11toast.toast("Download Complete", "The latest version has been downloaded. you can now use the new file.")
+        
+        # Close the game after downloading
+        sys.exit(0)
+    except Exception as e:
+        print(f"Download failed: {e}")
+def install_update(exe_path):
+    subprocess.run(exe_path, shell=True)  # Run the new executable
+    sys.exit(0)  # Exit the current application
+
+# Run update check if script is in executable mode
+if getattr(sys, 'frozen', False):  # Checks if running as an exe
+    check_for_update()
+
 
 songI = -1
 def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):
@@ -14,7 +66,7 @@ def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):
     
     if not song_files:
         win11toast.toast("Beat Rhythm - no songs available", "Please add songs to the songs folder.")
-        exit()
+        sys.exit()
     
     if force_next_song:
         force_next_song = False  # Reset after applying
@@ -54,7 +106,7 @@ if not os.path.exists("songs"):
 
 if len(glob.glob("songs/*.MP3")) == 0:
     win11toast.toast("Beat Rhythm - no songs available", "please add songs by adding them to songs folder")
-    exit()
+    sys.exit()
 
 # Colors
 WHITE = (255, 255, 255)
