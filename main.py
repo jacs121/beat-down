@@ -397,14 +397,12 @@ while running:
         combo_multiplier_text = combo_multiplier_font.render(f"{combo_multiplier}x", True, LIGHT_GRAY)
         combo_multiplier_rect = combo_multiplier_text.get_rect(center=(screen.get_width() / 2, 50))
         screen.blit(combo_multiplier_text, combo_multiplier_rect)
-    
-    if menu_screen and not start_menu:
-        pygame.display.flip()
+
     # Draw the target zone
     pygame.draw.circle(screen, target0_color if -1 in targets_active else GRAY, (400 - target_radius*2.5, target_y), target_radius)
     pygame.draw.circle(screen, target1_color if 0 in targets_active else GRAY, (400, target_y), target_radius)
     pygame.draw.circle(screen, target2_color if 1 in targets_active else GRAY, (400 + target_radius*2.5, target_y), target_radius)
-    if not start_menu:
+    if not menu_screen:
         progress_ratio = current_time / (song_duration if song_duration > 0 else 1)
         progress_width = int((screen.get_width() - 20) * progress_ratio)
         pygame.draw.rect(screen, GRAY, ((screen.get_width()/2)-progress_width/2, screen.get_height() - 10, progress_width, 10))  # Progress bar at top
