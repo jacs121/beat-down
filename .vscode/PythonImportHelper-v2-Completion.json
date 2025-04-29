@@ -173,7 +173,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "release_version = \"v1.0.2\"\n# GitHub repository details\nGITHUB_REPO = \"jacs121/beat-down\"\nLATEST_RELEASE_API = f\"https://api.github.com/repos/{GITHUB_REPO}/releases/latest\"\ndef check_for_update():\n    try:\n        response = requests.get(LATEST_RELEASE_API, timeout=5)\n        response.raise_for_status()\n        latest_release = response.json()\n        latest_version = latest_release[\"tag_name\"]",
+        "peekOfCode": "release_version = \"v1.1.0\"\n# GitHub repository details\nGITHUB_REPO = \"jacs121/beat-down\"\nLATEST_RELEASE_API = f\"https://api.github.com/repos/{GITHUB_REPO}/releases/latest\"\ndef check_for_update():\n    try:\n        response = requests.get(LATEST_RELEASE_API, timeout=5)\n        response.raise_for_status()\n        latest_release = response.json()\n        latest_version = latest_release[\"tag_name\"]",
         "detail": "main",
         "documentation": {}
     },

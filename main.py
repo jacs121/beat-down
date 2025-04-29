@@ -13,7 +13,7 @@ from librosa.util.exceptions import ParameterError
 from librosa.onset import onset_backtrack
 
 # Define current release version
-release_version = "v1.0.2"
+release_version = "v1.1.0"
 
 # GitHub repository details
 GITHUB_REPO = "jacs121/beat-down"
