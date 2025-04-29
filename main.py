@@ -8,6 +8,9 @@ import os
 import random
 import requests
 import sys
+import numpy as np
+from librosa.util.exceptions import ParameterError
+from librosa.onset import onset_backtrack
 
 # Define current release version
 release_version = "v1.0.2"
@@ -56,6 +59,35 @@ if getattr(sys, 'frozen', False):  # Checks if running as an exe
 
 
 songI = -1
+def get_adaptive_parameters(tempo, onset_env, sr):
+    # normalize the envelope to [0,1]
+    if onset_env.max() > 0:
+        onset_env = onset_env / np.max(onset_env)
+
+    # dynamic range
+    dynamic_range = np.max(onset_env) - np.min(onset_env)
+
+    # a more modest delta
+    #    – 75th percentile of the *normalized* envelope is in [0,1]
+    #    – scale it by a constant in [0.5, 0.8] instead of multiplying back by the big dynamic_range
+    perc75 = np.percentile(onset_env, 75)
+    delta  = perc75 * (0.65 + 0.25 * (1 - dynamic_range))
+
+    # beat-based windows (unchanged)
+    beat_interval   = 60.0 / tempo
+    frames_per_beat = int(beat_interval * sr / 512)
+    
+    print(delta)
+
+    return {
+        'delta':    delta,
+        'pre_max':  int(frames_per_beat * 1.5),
+        'post_max': int(frames_per_beat * 1.5),
+        'pre_avg':  max(3, int(frames_per_beat * 0.7)),
+        'post_avg': max(3, int(frames_per_beat * 0.7)),
+        'wait':     max(1, int(frames_per_beat * 0.3)),
+    }
+
 def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):
     global songI
     song_files = sorted(glob.glob("songs/*.MP3"))
@@ -64,36 +96,60 @@ def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):
         win11toast.toast("Beat Rhythm - no songs available", "Please add songs to the songs folder.")
         sys.exit()
     
-    songI = (songI + 1) % len(song_files)  # Normal cycling
-
-    audio_path = song_files[songI]  # Correct indexing
-
+    songI = (songI + 1) % len(song_files)
+    audio_path = song_files[songI]
+    
     pygame.display.set_caption(f"Beat down - waiting...")
-    
     print(f"Loading {audio_path}...")
-    y, sr = librosa.load(audio_path, sr=None)
     
-    # Get tempo (BPM) estimate
-    tempo, _ = librosa.beat.beat_track(y=y, sr=sr)
-
+    # Load audio and extract features
+    y, sr = librosa.load(audio_path, sr=None)
+    onset_env = librosa.onset.onset_strength(y=y, sr=sr)
+    tempo, _ = librosa.beat.beat_track(onset_envelope=onset_env, sr=sr)
+    
+    # Parameter selection
     if auto:
-        # Compute RMS energy of the song
-        rms = librosa.feature.rms(y=y)[0]
-        avg_rms = sum(rms) / len(rms)  # Average energy level
-        delta = max(0.1, min(0.25, 0.18 + (0.07 * (1 - min(avg_rms / 0.1, 1)))))  # Clamped delta
+        params = get_adaptive_parameters(tempo, onset_env, sr)
+    else:
+        params = {
+            'delta': delta,
+            'pre_max': int(pre_max),
+            'post_max': int(post_max),
+            'pre_avg': 5,
+            'post_avg': 5,
+            'wait': 2
+        }
 
-        pre_max = max(5, int(20 - (tempo / 10)))  # Higher tempo = Lower pre_max
-        post_max = max(5, int(20 - (tempo / 10)))
-
-    onset_frames = librosa.onset.onset_detect(y=y, sr=sr, delta=delta, pre_max=pre_max, post_max=post_max, backtrack=True)
+    # Detect onsets with selected parameters
+    raw_frames = librosa.onset.onset_detect(
+        y=y,
+        sr=sr,
+        delta=params['delta'],
+        pre_max=params['pre_max'],
+        post_max=params['post_max'],
+        pre_avg=params['pre_avg'],
+        post_avg=params['post_avg'],
+        wait=params['wait'],
+        backtrack=False,
+        onset_envelope=onset_env
+    )
+    
+    if raw_frames.size > 0:
+        try:
+            onset_frames = onset_backtrack(raw_frames, onset_env)
+        except ParameterError:
+            onset_frames = raw_frames
+    else:
+        onset_frames = raw_frames
+        
+    # Convert results
     onset_times = librosa.frames_to_time(onset_frames, sr=sr)
-
     song_duration = librosa.get_duration(y=y, sr=sr)
-    end_trigger_time = song_duration - 10  # 10 seconds before song ends
+    end_trigger_time = song_duration - 10  # 10 seconds before end
+    
     pygame.display.set_caption(f"Beat down - {os.path.basename(audio_path)}")
-
+    
     return end_trigger_time, onset_times, audio_path, song_duration
-
 
 if not os.path.exists("songs"):
     os.mkdir("songs")
@@ -153,10 +209,10 @@ targets_active = [-1, 1]
 max_combo_multiplier = 10
 
 DIFFICULTY_SETTINGS = {
-    "easy": {"tolerance": 50, "beat_speed": 80, "targets": [0], "max_combo": 15},
-    "normal": {"tolerance": 40, "beat_speed": 155, "targets": [-1, 1], "max_combo": 10},
-    "hard": {"tolerance": 40, "beat_speed": 200, "targets": [-1, 0, 1], "max_combo": 7},
-    "extreme": {"tolerance": 35, "beat_speed": 230, "targets": [-1, 0, 1], "max_combo": 5},
+    "easy": {"tolerance": 45, "beat_speed": 100, "targets": [0], "max_combo": 15},
+    "normal": {"tolerance": 35, "beat_speed": 155, "targets": [-1, 1], "max_combo": 10},
+    "hard": {"tolerance": 35, "beat_speed": 200, "targets": [-1, 0, 1], "max_combo": 7},
+    "extreme": {"tolerance": 30, "beat_speed": 230, "targets": [-1, 0, 1], "max_combo": 5},
 }
 
 def change_difficulty(level="normal"):
@@ -388,6 +444,11 @@ while running:
                 songI = (songI + 1) % len(songList)
                 force_next_song = True
                 next_song_color = YELLOW
+            elif event.key == pygame.K_ESCAPE and not menu_screen:
+                menu_screen = True
+                pygame.mixer.music.stop()
+                score = 0
+                maxScore = 0
 
     if combo_multiplier_show_cooldown > 0 and not menu_screen:
         combo_multiplier_show_cooldown -= 1

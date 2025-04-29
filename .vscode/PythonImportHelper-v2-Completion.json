@@ -90,6 +90,31 @@
         "documentation": {}
     },
     {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "ParameterError",
+        "importPath": "librosa.util.exceptions",
+        "description": "librosa.util.exceptions",
+        "isExtraImport": true,
+        "detail": "librosa.util.exceptions",
+        "documentation": {}
+    },
+    {
+        "label": "onset_backtrack",
+        "importPath": "librosa.onset",
+        "description": "librosa.onset",
+        "isExtraImport": true,
+        "detail": "librosa.onset",
+        "documentation": {}
+    },
+    {
         "label": "check_for_update",
         "kind": 2,
         "importPath": "main",
@@ -108,11 +133,20 @@
         "documentation": {}
     },
     {
+        "label": "get_adaptive_parameters",
+        "kind": 2,
+        "importPath": "main",
+        "description": "main",
+        "peekOfCode": "def get_adaptive_parameters(tempo, onset_env, sr):\n    # normalize the envelope to [0,1]\n    if onset_env.max() > 0:\n        onset_env = onset_env / np.max(onset_env)\n    # dynamic range\n    dynamic_range = np.max(onset_env) - np.min(onset_env)\n    # a more modest delta\n    #    – 75th percentile of the *normalized* envelope is in [0,1]\n    #    – scale it by a constant in [0.5, 0.8] instead of multiplying back by the big dynamic_range\n    perc75 = np.percentile(onset_env, 75)",
+        "detail": "main",
+        "documentation": {}
+    },
+    {
         "label": "cycleSong",
         "kind": 2,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):\n    global songI\n    song_files = sorted(glob.glob(\"songs/*.MP3\"))\n    if not song_files:\n        win11toast.toast(\"Beat Rhythm - no songs available\", \"Please add songs to the songs folder.\")\n        sys.exit()\n    songI = (songI + 1) % len(song_files)  # Normal cycling\n    audio_path = song_files[songI]  # Correct indexing\n    pygame.display.set_caption(f\"Beat down - waiting...\")\n    print(f\"Loading {audio_path}...\")",
+        "peekOfCode": "def cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):\n    global songI\n    song_files = sorted(glob.glob(\"songs/*.MP3\"))\n    if not song_files:\n        win11toast.toast(\"Beat Rhythm - no songs available\", \"Please add songs to the songs folder.\")\n        sys.exit()\n    songI = (songI + 1) % len(song_files)\n    audio_path = song_files[songI]\n    pygame.display.set_caption(f\"Beat down - waiting...\")\n    print(f\"Loading {audio_path}...\")",
         "detail": "main",
         "documentation": {}
     },
@@ -166,7 +200,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "songI = -1\ndef cycleSong(delta=0.22, pre_max=10.5, post_max=10.5, auto:bool = True):\n    global songI\n    song_files = sorted(glob.glob(\"songs/*.MP3\"))\n    if not song_files:\n        win11toast.toast(\"Beat Rhythm - no songs available\", \"Please add songs to the songs folder.\")\n        sys.exit()\n    songI = (songI + 1) % len(song_files)  # Normal cycling\n    audio_path = song_files[songI]  # Correct indexing\n    pygame.display.set_caption(f\"Beat down - waiting...\")",
+        "peekOfCode": "songI = -1\ndef get_adaptive_parameters(tempo, onset_env, sr):\n    # normalize the envelope to [0,1]\n    if onset_env.max() > 0:\n        onset_env = onset_env / np.max(onset_env)\n    # dynamic range\n    dynamic_range = np.max(onset_env) - np.min(onset_env)\n    # a more modest delta\n    #    – 75th percentile of the *normalized* envelope is in [0,1]\n    #    – scale it by a constant in [0.5, 0.8] instead of multiplying back by the big dynamic_range",
         "detail": "main",
         "documentation": {}
     },
@@ -436,7 +470,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "menu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []\nsongList = sorted(glob.glob(\"songs/*.MP3\"))\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},",
+        "peekOfCode": "menu_screen = True  # Variable to track if end screen should be displayed\ntargets_active = []\nsongList = sorted(glob.glob(\"songs/*.MP3\"))\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 45, \"beat_speed\": 100, \"targets\": [0], \"max_combo\": 15},",
         "detail": "main",
         "documentation": {}
     },
@@ -445,7 +479,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "targets_active = []\nsongList = sorted(glob.glob(\"songs/*.MP3\"))\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},",
+        "peekOfCode": "targets_active = []\nsongList = sorted(glob.glob(\"songs/*.MP3\"))\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 45, \"beat_speed\": 100, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 35, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},",
         "detail": "main",
         "documentation": {}
     },
@@ -454,7 +488,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "songList = sorted(glob.glob(\"songs/*.MP3\"))\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},",
+        "peekOfCode": "songList = sorted(glob.glob(\"songs/*.MP3\"))\ndifficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 45, \"beat_speed\": 100, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 35, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 35, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},",
         "detail": "main",
         "documentation": {}
     },
@@ -463,7 +497,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "difficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},",
+        "peekOfCode": "difficulty = \"normal\"\ntolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 45, \"beat_speed\": 100, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 35, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 35, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 30, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},",
         "detail": "main",
         "documentation": {}
     },
@@ -472,7 +506,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "tolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}",
+        "peekOfCode": "tolerance = 40\nbeat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 45, \"beat_speed\": 100, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 35, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 35, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 30, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}",
         "detail": "main",
         "documentation": {}
     },
@@ -481,7 +515,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "beat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):",
+        "peekOfCode": "beat_speed = 155  # Speed at which onsets move down the screen (pixels per second)\ntargets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 45, \"beat_speed\": 100, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 35, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 35, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 30, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):",
         "detail": "main",
         "documentation": {}
     },
@@ -490,7 +524,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "targets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):\n    global tolerance, beat_speed, targets_active, max_combo_multiplier, difficulty",
+        "peekOfCode": "targets_active = [-1, 1]\nmax_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 45, \"beat_speed\": 100, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 35, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 35, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 30, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):\n    global tolerance, beat_speed, targets_active, max_combo_multiplier, difficulty",
         "detail": "main",
         "documentation": {}
     },
@@ -499,7 +533,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "max_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):\n    global tolerance, beat_speed, targets_active, max_combo_multiplier, difficulty\n    difficulty = level",
+        "peekOfCode": "max_combo_multiplier = 10\nDIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 45, \"beat_speed\": 100, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 35, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 35, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 30, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):\n    global tolerance, beat_speed, targets_active, max_combo_multiplier, difficulty\n    difficulty = level",
         "detail": "main",
         "documentation": {}
     },
@@ -508,7 +542,7 @@
         "kind": 5,
         "importPath": "main",
         "description": "main",
-        "peekOfCode": "DIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 50, \"beat_speed\": 80, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 40, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 40, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 35, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):\n    global tolerance, beat_speed, targets_active, max_combo_multiplier, difficulty\n    difficulty = level\n    settings = DIFFICULTY_SETTINGS[level]",
+        "peekOfCode": "DIFFICULTY_SETTINGS = {\n    \"easy\": {\"tolerance\": 45, \"beat_speed\": 100, \"targets\": [0], \"max_combo\": 15},\n    \"normal\": {\"tolerance\": 35, \"beat_speed\": 155, \"targets\": [-1, 1], \"max_combo\": 10},\n    \"hard\": {\"tolerance\": 35, \"beat_speed\": 200, \"targets\": [-1, 0, 1], \"max_combo\": 7},\n    \"extreme\": {\"tolerance\": 30, \"beat_speed\": 230, \"targets\": [-1, 0, 1], \"max_combo\": 5},\n}\ndef change_difficulty(level=\"normal\"):\n    global tolerance, beat_speed, targets_active, max_combo_multiplier, difficulty\n    difficulty = level\n    settings = DIFFICULTY_SETTINGS[level]",
         "detail": "main",
         "documentation": {}
     },
